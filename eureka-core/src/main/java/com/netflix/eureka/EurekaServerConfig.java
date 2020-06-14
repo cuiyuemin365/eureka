@@ -332,7 +332,7 @@ public interface EurekaServerConfig {
     long getResponseCacheUpdateIntervalMs();
 
     /**
-     * 否开启只读请求响应缓存。
+     * 是否开启只读请求响应缓存。
      * 响应缓存 ( ResponseCache ) 机制目前使用两层缓存策略。
      * 优先读取永不过期的只读缓存，读取不到后读取固定过期的读写缓存。
      * The {@link com.netflix.eureka.registry.ResponseCache} currently uses a two level caching

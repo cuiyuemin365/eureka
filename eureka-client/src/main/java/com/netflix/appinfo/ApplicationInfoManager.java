@@ -177,6 +177,8 @@ public class ApplicationInfoManager {
     }
 
     /**
+     * 设置应用实例信息的状态
+     * 关闭的时候
      * Set the status of this instance. Application can use this to indicate
      * whether it is ready to receive traffic. Setting the status here also notifies all registered listeners
      * of a status change event.
@@ -188,7 +190,7 @@ public class ApplicationInfoManager {
         if (next == null) {
             return;
         }
-
+        //执行StatusChangeListener
         InstanceStatus prev = instanceInfo.setStatus(next);
         if (prev != null) {
             for (StatusChangeListener listener : listeners.values()) {
@@ -271,7 +273,10 @@ public class ApplicationInfoManager {
         }
         int currentLeaseDuration = config.getLeaseExpirationDurationInSeconds();
         int currentLeaseRenewal = config.getLeaseRenewalIntervalInSeconds();
+        // 租约过期时间 改变
+        // 租约续约频率 改变
         if (leaseInfo.getDurationInSecs() != currentLeaseDuration || leaseInfo.getRenewalIntervalInSecs() != currentLeaseRenewal) {
+            //重设租约信息
             LeaseInfo newLeaseInfo = LeaseInfo.Builder.newBuilder()
                     .setRenewalIntervalInSecs(currentLeaseRenewal)
                     .setDurationInSecs(currentLeaseDuration)
