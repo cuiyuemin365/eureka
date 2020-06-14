@@ -51,10 +51,16 @@ import com.netflix.discovery.shared.transport.EurekaTransportConfig;
  * @author Karthik Ranganathan
  *
  */
+//eureka客户端向eureka服务器注册实例所需的配置信息。
+//大多数必需的信息由默认配置DefaultEurekaClientConfig提供。用户只需提供eureka服务器服务url。Eureka服务器服务url可以通过两种机制配置1)通过在DNS中注册信息。2)在配置中指定。
+//客户端注册后，用户可以基于虚拟主机名(也称为VIPAddress)从EurekaClient查找信息，这是最常见的方法，或者通过其他方法获得与在Eureka注册的其他实例进行对话所需的信息。
+//注意，除非另有指定，否则所有配置在运行时都不是有效的。
+//Eureka-Client 配置接口
 @ImplementedBy(DefaultEurekaClientConfig.class)
 public interface EurekaClientConfig {
 
     /**
+     * 从 Eureka-Server 拉取注册信息频率，单位：秒
      * Indicates how often(in seconds) to fetch the registry information from
      * the eureka server.
      *
@@ -63,6 +69,7 @@ public interface EurekaClientConfig {
     int getRegistryFetchIntervalSeconds();
 
     /**
+     * 向 Eureka-Server 同步实例对象信息变化频率，单位：秒
      * Indicates how often(in seconds) to replicate instance changes to be
      * replicated to the eureka server.
      *
@@ -71,12 +78,14 @@ public interface EurekaClientConfig {
     int getInstanceInfoReplicationIntervalSeconds();
 
     /**
+     * 向 Eureka-Server 同步应用信息变化初始化延迟，单位：秒
      * Indicates how long initially (in seconds) to replicate instance info
      * to the eureka server
      */
     int getInitialInstanceInfoReplicationIntervalSeconds();
 
     /**
+     * 轮询获取 Eureka-Server 地址变更频率，单位：秒
      * Indicates how often(in seconds) to poll for changes to eureka server
      * information.
      *
@@ -90,6 +99,7 @@ public interface EurekaClientConfig {
     int getEurekaServiceUrlPollIntervalSeconds();
 
     /**
+     *  Eureka-Server 代理主机
      * Gets the proxy host to eureka server if any.
      *
      * @return the proxy host.
@@ -97,6 +107,7 @@ public interface EurekaClientConfig {
     String getProxyHost();
 
     /**
+     * Eureka-Server 代理主机端口
      * Gets the proxy port to eureka server if any.
      *
      * @return the proxy port.
@@ -104,6 +115,7 @@ public interface EurekaClientConfig {
     String getProxyPort();
 
     /**
+     * Eureka-Server 代理用户名
      * Gets the proxy user name if any.
      *
      * @return the proxy user name.
@@ -111,6 +123,7 @@ public interface EurekaClientConfig {
     String getProxyUserName();
 
     /**
+     * Eureka-Server 代理密码
      * Gets the proxy password if any.
      *
      * @return the proxy password.
@@ -129,6 +142,7 @@ public interface EurekaClientConfig {
     boolean shouldGZipContent();
 
     /**
+     *  Eureka-Server 读取超时时间
      * Indicates how long to wait (in seconds) before a read from eureka server
      * needs to timeout.
      *
@@ -137,6 +151,7 @@ public interface EurekaClientConfig {
     int getEurekaServerReadTimeoutSeconds();
 
     /**
+     * Eureka-Server 连接超时时间
      * Indicates how long to wait (in seconds) before a connection to eureka
      * server needs to timeout.
      *
@@ -152,6 +167,7 @@ public interface EurekaClientConfig {
     int getEurekaServerConnectTimeoutSeconds();
 
     /**
+     * 获取备份注册中心实现类
      * Gets the name of the implementation which implements
      * {@link BackupRegistry} to fetch the registry information as a fall back
      * option for only the first time when the eureka client starts.
@@ -166,6 +182,7 @@ public interface EurekaClientConfig {
     String getBackupRegistryImpl();
 
     /**
+     * 所有 Eureka-Server 总连接数
      * Gets the total number of connections that is allowed from eureka client
      * to all eureka servers.
      *
@@ -175,6 +192,7 @@ public interface EurekaClientConfig {
     int getEurekaServerTotalConnections();
 
     /**
+     * 单个 Eureka-Server 总连接数
      * Gets the total number of connections that is allowed from eureka client
      * to a eureka server host.
      *
@@ -184,6 +202,7 @@ public interface EurekaClientConfig {
     int getEurekaServerTotalConnectionsPerHost();
 
     /**
+     * Eureka-Server 的 URL Context
      * Gets the URL context to be used to construct the <em>service url</em> to
      * contact eureka server when the list of eureka servers come from the
      * DNS.This information is not required if the contract returns the service
@@ -206,6 +225,7 @@ public interface EurekaClientConfig {
     String getEurekaServerURLContext();
 
     /**
+     *  Eureka-Server 的 Port
      * Gets the port to be used to construct the <em>service url</em> to contact
      * eureka server when the list of eureka servers come from the DNS.This
      * information is not required if the contract returns the service urls by
@@ -228,6 +248,7 @@ public interface EurekaClientConfig {
     String getEurekaServerPort();
 
     /**
+     *  Eureka-Server 的 DNS 名
      * Gets the DNS name to be queried to get the list of eureka servers.This
      * information is not required if the contract returns the service urls by
      * implementing {@link #getEurekaServerServiceUrls(String)}.
@@ -249,6 +270,7 @@ public interface EurekaClientConfig {
     String getEurekaServerDNSName();
 
     /**
+     * 是否使用 DNS 获取 Eureka-Server 地址集合
      * Indicates whether the eureka client should use the DNS mechanism to fetch
      * a list of eureka servers to talk to. When the DNS name is updated to have
      * additional servers, that information is used immediately after the eureka
@@ -270,6 +292,7 @@ public interface EurekaClientConfig {
     boolean shouldUseDnsForFetchingServiceUrls();
 
     /**
+     * 是否向 Eureka-Server 注册自身服务
      * Indicates whether or not this instance should register its information
      * with eureka server for discovery by others.
      *
@@ -284,6 +307,7 @@ public interface EurekaClientConfig {
     boolean shouldRegisterWithEureka();
 
     /**
+     * 是否向 Eureka-Server 取消注册自身服务，当进程关闭时
      * Indicates whether the client should explicitly unregister itself from the remote server
      * on client shutdown.
      * 
@@ -294,6 +318,7 @@ public interface EurekaClientConfig {
     }
 
     /**
+     *  优先使用相同 Zone 的 Eureka-Server
      * Indicates whether or not this instance should try to use the eureka
      * server in the same zone for latency and/or other reason.
      *
@@ -312,6 +337,7 @@ public interface EurekaClientConfig {
     boolean shouldPreferSameZoneEureka();
 
     /**
+     * 是否允许被 Eureka-Server 重定向
      * Indicates whether server can redirect a client request to a backup server/cluster.
      * If set to false, the server will handle the request directly, If set to true, it may
      * send HTTP redirect to the client, with a new server location.
@@ -434,6 +460,7 @@ public interface EurekaClientConfig {
     boolean shouldFilterOnlyUpInstances();
 
     /**
+     * Eureka-Server 连接的空闲关闭时间，单位：秒
      * Indicates how much time (in seconds) that the HTTP connections to eureka
      * server can stay idle before it can be closed.
      *
@@ -449,6 +476,7 @@ public interface EurekaClientConfig {
     int getEurekaConnectionIdleTimeoutSeconds();
 
     /**
+     * 是否从 Eureka-Server 拉取注册信息
      * Indicates whether this client should fetch eureka registry information from eureka server.
      *
      * @return {@code true} if registry information has to be fetched, {@code false} otherwise.
@@ -465,6 +493,7 @@ public interface EurekaClientConfig {
     String getRegistryRefreshSingleVipAddress();
 
     /**
+     * 心跳执行线程池大小
      * The thread pool size for the heartbeatExecutor to initialise with
      *
      * @return the heartbeatExecutor thread pool size
@@ -472,6 +501,7 @@ public interface EurekaClientConfig {
     int getHeartbeatExecutorThreadPoolSize();
 
     /**
+     * 心跳执行超时后的延迟重试的时间
      * Heartbeat executor exponential back off related property.
      * It is a maximum multiplier value for retry delay, in case where a sequence of timeouts
      * occurred.
@@ -481,6 +511,7 @@ public interface EurekaClientConfig {
     int getHeartbeatExecutorExponentialBackOffBound();
 
     /**
+     * 注册信息缓存刷新线程池大小
      * The thread pool size for the cacheRefreshExecutor to initialise with
      *
      * @return the cacheRefreshExecutor thread pool size
@@ -488,6 +519,7 @@ public interface EurekaClientConfig {
     int getCacheRefreshExecutorThreadPoolSize();
 
     /**
+     *  注册信息缓存刷新执行超时后的延迟重试的时间
      * Cache refresh executor exponential back off related property.
      * It is a maximum multiplier value for retry delay, in case where a sequence of timeouts
      * occurred.

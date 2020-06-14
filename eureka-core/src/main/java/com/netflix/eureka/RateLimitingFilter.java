@@ -84,6 +84,18 @@ import org.slf4j.LoggerFactory;
  *
  * @author Tomasz Bak
  */
+//速率限制过滤器，具有可配置的阈值，超过该阈值，非特权客户端将被删除。该特性允许在系统过载时切断非标准的、可能有害的客户机。
+// 由于始终允许客户端注册和心跳进入系统是至关重要的，这同时也是相对便宜的操作，因此速率限制仅适用于完整和增量注册表获取。
+// 此外，由于delta获取要比完全获取小得多，而且如果不满足我从客户端执行完整注册表获取的结果，它们具有相对较高的优先级。
+// 这是由两个并行的速率限制器实现的，一个用于全/增量提取的总数(较高的阈值)，另一个用于全提取(低阈值)。
+//客户端由AbstractEurekaIdentity标识。AUTH_NAME_HEADER_KEY HTTP头值。特权组默认包含:
+//EurekaClientIdentity。DEFAULT_CLIENT_NAME -标准的Java eureka-client。使用此客户机的应用程序自动属于特权组。
+//EurekaServerIdentity。DEFAULT_SERVER_NAME—来自同级Eureka服务器的连接(仅限于内部，流量复制)
+//可以通过EurekaServerConfig.isRateLimiterThrottleStandardClients()属性关闭特权客户端过滤。
+//速率限制在默认情况下是不启用的，但是可以通过配置启用。即使禁用了，节流统计信息仍然会被计算，尽管是在一个单独的计数器上，因此可以在激活之前度量此特性的影响。
+//速率限制器的实现是基于令牌桶算法。有两个可配置参数:
+//突发大小——允许以突发形式进入系统的请求的最大数量
+//平均速率——期望的每秒请求数
 @Singleton
 public class RateLimitingFilter implements Filter {
 

@@ -29,13 +29,12 @@ import com.netflix.eureka.aws.AwsBindingStrategy;
  * <p>
  * Most of the required information is provided by the default configuration
  * {@link com.netflix.eureka.DefaultEurekaServerConfig}.
- *
+ * <p>
  * Note that all configurations are not effective at runtime unless and
  * otherwise specified.
  * </p>
  *
  * @author Karthik Ranganathan
- *
  */
 public interface EurekaServerConfig {
 
@@ -66,7 +65,7 @@ public interface EurekaServerConfig {
      * </p>
      *
      * @return the number of times the server should try to bind to the
-     *         candidate EIP.
+     * candidate EIP.
      */
     int getEIPBindRebindRetries();
 
@@ -95,6 +94,11 @@ public interface EurekaServerConfig {
     int getEIPBindingRetryIntervalMs();
 
     /**
+     * 是否开启自我保护模式。
+     * * FROM 周立——《理解Eureka的自我保护模式》
+     * * 当Eureka Server节点在短时间内丢失过多客户端时（可能发生了网络分区故障），那么这个节点就会进入自我保护模式。
+     * * 一旦进入该模式，Eureka Server就会保护服务注册表中的信息，不再删除服务注册表中的数据（也就是不会注销任何微服务）。
+     * * 当网络故障恢复后，该Eureka Server节点会自动退出自我保护模式。
      * Checks to see if the eureka server is enabled for self preservation.
      *
      * <p>
@@ -113,6 +117,7 @@ public interface EurekaServerConfig {
     boolean shouldEnableSelfPreservation();
 
     /**
+     * 开启自我保护模式比例，超过该比例后开启自我保护模式。
      * The minimum percentage of renewals that is expected from the clients in
      * the period specified by {@link #getRenewalThresholdUpdateIntervalMs()}.
      * If the renewals drop below the threshold, the expirations are disabled if
@@ -123,11 +128,12 @@ public interface EurekaServerConfig {
      * </p>
      *
      * @return value between 0 and 1 indicating the percentage. For example,
-     *         <code>85%</code> will be specified as <code>0.85</code>.
+     * <code>85%</code> will be specified as <code>0.85</code>.
      */
     double getRenewalPercentThreshold();
 
     /**
+     * 自我保护模式比例更新频率，单位：毫秒。
      * The interval with which the threshold as specified in
      * {@link #getRenewalPercentThreshold()} needs to be updated.
      *
@@ -146,6 +152,8 @@ public interface EurekaServerConfig {
     int getExpectedClientRenewalIntervalSeconds();
 
     /**
+     * 同级eureka节点中有关更改信息的更新间隔。用户可以使用DNS机制或Archaius提供的动态配置动态更改信息。
+     * 这些更改在运行时有效。
      * The interval with which the information about the changes in peer eureka
      * nodes is updated. The user can use the DNS mechanism or dynamic
      * configuration provided by <a href="https://github.com/Netflix/archaius">Archaius</a> to
@@ -159,6 +167,7 @@ public interface EurekaServerConfig {
     int getPeerEurekaNodesUpdateIntervalMs();
 
     /**
+     * 是否开启 Eureka-Server 集群间请求压缩
      * If set to true, the replicated data send in the request will be always compressed.
      * This does not define response path, which is driven by "Accept-Encoding" header.
      */
@@ -187,11 +196,14 @@ public interface EurekaServerConfig {
     int getPeerEurekaStatusRefreshTimeIntervalMs();
 
     /**
+     * 获取eureka服务器启动时无法从对等节点获取实例的等待时间。
+     * 在这些场景中，最好不要立即开始提供服务，因为存储在注册中心中的信息可能不完整。
+     * 当实例注册表启动时为空，当客户端开始发送心跳和服务器请求客户端注册信息时，它会随着时间的推移而构建。
      * Gets the time to wait when the eureka server starts up unable to get
      * instances from peer nodes. It is better not to start serving rightaway
      * during these scenarios as the information that is stored in the registry
      * may not be complete.
-     *
+     * <p>
      * When the instance registry starts up empty, it builds over time when the
      * clients start to send heartbeats and the server requests the clients for
      * registration information.
@@ -201,6 +213,7 @@ public interface EurekaServerConfig {
     int getWaitTimeInMsWhenSyncEmpty();
 
     /**
+     * 【复制】远程 Eureka-Server 请求连接超时时间，单位：毫秒
      * Gets the timeout value for connecting to peer eureka nodes for
      * replication.
      *
@@ -209,6 +222,7 @@ public interface EurekaServerConfig {
     int getPeerNodeConnectTimeoutMs();
 
     /**
+     * 【复制】远程 Eureka-Server 请求读取超时时间，单位：毫秒
      * Gets the timeout value for reading information from peer eureka nodes for
      * replication.
      *
@@ -217,6 +231,7 @@ public interface EurekaServerConfig {
     int getPeerNodeReadTimeoutMs();
 
     /**
+     * 【复制】全部远程 Eureka-Server 请求总连接数
      * Gets the total number of <em>HTTP</em> connections allowed to peer eureka
      * nodes for replication.
      *
@@ -225,15 +240,17 @@ public interface EurekaServerConfig {
     int getPeerNodeTotalConnections();
 
     /**
+     * 【复制】单个远程 Eureka-Server 请求总连接数
      * Gets the total number of <em>HTTP</em> connections allowed to a
      * particular peer eureka node for replication.
      *
      * @return total number of allowed <em>HTTP</em> connections for a peer
-     *         node.
+     * node.
      */
     int getPeerNodeTotalConnectionsPerHost();
 
     /**
+     * 【复制】远程 Eureka-Server 请求空闲超时时间，单位：毫秒
      * Gets the idle time after which the <em>HTTP</em> connection should be
      * cleaned up.
      *
@@ -296,6 +313,7 @@ public interface EurekaServerConfig {
     long getASGCacheExpiryTimeoutMs();
 
     /**
+     * 读写缓存写入后过期时间，单位：秒。
      * Gets the time for which the registry payload should be kept in the cache
      * if it is not invalidated by change events.
      *
@@ -304,6 +322,8 @@ public interface EurekaServerConfig {
     long getResponseCacheAutoExpirationInSeconds();
 
     /**
+     * 只读缓存更新频率，单位：毫秒。
+     * 只读缓存定时更新任务只更新读取过请求 (com.netflix.eureka.registry.Key)，因此虽然永不过期，也会存在读取不到的情况。
      * Gets the time interval with which the payload cache of the client should
      * be updated.
      *
@@ -312,6 +332,9 @@ public interface EurekaServerConfig {
     long getResponseCacheUpdateIntervalMs();
 
     /**
+     * 否开启只读请求响应缓存。
+     * 响应缓存 ( ResponseCache ) 机制目前使用两层缓存策略。
+     * 优先读取永不过期的只读缓存，读取不到后读取固定过期的读写缓存。
      * The {@link com.netflix.eureka.registry.ResponseCache} currently uses a two level caching
      * strategy to responses. A readWrite cache with an expiration policy, and a readonly cache
      * that caches without expiry.
@@ -327,7 +350,7 @@ public interface EurekaServerConfig {
      * </p>
      *
      * @return true if the delta information is allowed to be served, false
-     *         otherwise.
+     * otherwise.
      */
     boolean shouldDisableDelta();
 
@@ -362,7 +385,7 @@ public interface EurekaServerConfig {
      * </p>
      *
      * @return the maximum number of replication events that can be allowed to
-     *         back up.
+     * back up.
      */
     int getMaxElementsInStatusReplicationPool();
 
@@ -402,7 +425,7 @@ public interface EurekaServerConfig {
      * </p>
      *
      * @return the maximum number of replication events that can be allowed to
-     *         back up.
+     * back up.
      */
     int getMaxElementsInPeerReplicationPool();
 
@@ -438,7 +461,7 @@ public interface EurekaServerConfig {
      * or to run eureka in a single node configuration.
      *
      * @return minimum number of available peer replication instances
-     *         for this instance to be considered healthy.
+     * for this instance to be considered healthy.
      */
     int getHealthStatusMinNumberOfAvailablePeers();
 
@@ -466,7 +489,7 @@ public interface EurekaServerConfig {
      * </p>
      *
      * @return true if the delta information is allowed to be served, false
-     *         otherwise.
+     * otherwise.
      */
     boolean shouldDisableDeltaForRemoteRegions();
 
@@ -500,7 +523,7 @@ public interface EurekaServerConfig {
      * particular peer eureka node for remote regions.
      *
      * @return total number of allowed <em>HTTP</em> connections for a peer
-     *         node.
+     * node.
      */
     int getRemoteRegionTotalConnectionsPerHost();
 
@@ -532,6 +555,7 @@ public interface EurekaServerConfig {
 
     /**
      * Get the list of remote region urls.
+     *
      * @return - array of string representing {@link java.net.URL}s.
      * @deprecated Use {@link #getRemoteRegionUrlsWithName()}
      */
@@ -546,7 +570,6 @@ public interface EurekaServerConfig {
      *
      * @param regionName Name of the region for which the application whitelist is to be retrieved. If null a global
      *                   setting is returned.
-     *
      * @return A set of application names which must be retrieved from the passed region. If <code>null</code> all
      * applications must be retrieved.
      */
@@ -555,6 +578,7 @@ public interface EurekaServerConfig {
 
     /**
      * Get the time interval for which the registry information need to be fetched from the remote region.
+     *
      * @return time in seconds.
      */
     int getRemoteRegionRegistryFetchInterval();
@@ -567,6 +591,7 @@ public interface EurekaServerConfig {
 
     /**
      * Gets the fully qualified trust store file that will be used for remote region registry fetches.
+     *
      * @return
      */
     String getRemoteRegionTrustStore();
@@ -586,6 +611,7 @@ public interface EurekaServerConfig {
 
     /**
      * Indicates whether the replication between cluster nodes should be batched for network efficiency.
+     *
      * @return {@code true} if the replication needs to be batched.
      */
     boolean shouldBatchReplication();
@@ -596,12 +622,14 @@ public interface EurekaServerConfig {
      * node to URLs of associated load balancers helps to avoid replication to the same node where event originally came
      * to. Important: you need to configure the whole URL including scheme and path, like
      * <code>http://eureka-node1.mydomain.com:8010/eureka/v2/</code>
+     *
      * @return URL Eureka will treat as its own
      */
     String getMyUrl();
 
     /**
      * Indicates whether the eureka server should log/metric clientAuthHeaders
+     *
      * @return {@code true} if the clientAuthHeaders should be logged and/or emitted as metrics
      */
     boolean shouldLogIdentityHeaders();
@@ -657,12 +685,12 @@ public interface EurekaServerConfig {
 
     /**
      * Get the configured binding strategy EIP or Route53.
+     *
      * @return the configured binding strategy
      */
     AwsBindingStrategy getBindingStrategy();
 
     /**
-     *
      * @return the ttl used to set up the route53 domain if new
      */
     long getRoute53DomainTTL();
@@ -676,7 +704,7 @@ public interface EurekaServerConfig {
      * </p>
      *
      * @return the number of times the server should try to bind to the
-     *         candidate Route53 domain.
+     * candidate Route53 domain.
      */
     int getRoute53BindRebindRetries();
 

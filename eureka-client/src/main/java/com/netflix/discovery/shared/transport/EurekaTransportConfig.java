@@ -1,6 +1,7 @@
 package com.netflix.discovery.shared.transport;
 
 /**
+ * 管理与传输层相关的配置的配置类
  * Config class that governs configurations relevant to the transport layer
  *
  * @author David Liu
@@ -8,11 +9,13 @@ package com.netflix.discovery.shared.transport;
 public interface EurekaTransportConfig {
 
     /**
+     * EurekaHttpClient 会话周期性重连时间，单位：秒。
      * @return the reconnect inverval to use for sessioned clients
      */
     int getSessionedClientReconnectIntervalSeconds();
 
     /**
+     * 重试 EurekaHttpClient ，请求失败的 Eureka-Server 隔离集合占比 Eureka-Server 全量集合占比，超过该比例，进行清空。
      * @return the percentage of the full endpoints set above which the quarantine set is cleared in the range [0, 1.0]
      */
     double getRetryableClientQuarantineRefreshPercentage();

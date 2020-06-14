@@ -26,6 +26,9 @@ import com.netflix.discovery.shared.LookupService;
  *
  * @author David Liu
  */
+//提供多种方法获取应用集合(com.netflix.discovery.shared.Applications) 和 应用实例信息集合( com.netflix.appinfo.InstanceInfo )。
+//提供方法获取本地客户端信息，例如，应用管理器( com.netflix.appinfo.ApplicationInfoManager )和 Eureka-Client 配置( com.netflix.discovery.EurekaClientConfig )。
+//提供方法注册本地客户端的健康检查和 Eureka 事件监听器。
 @ImplementedBy(DiscoveryClient.class)
 public interface EurekaClient extends LookupService {
 

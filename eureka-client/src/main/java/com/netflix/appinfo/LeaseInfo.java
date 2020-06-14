@@ -22,6 +22,10 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
 /**
+ * 租约信息
+ */
+
+/**
  * Represents the <em>lease</em> information with <em>Eureka</em>.
  *
  * <p>
